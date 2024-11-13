@@ -1,0 +1,158 @@
+:root {
+    --bg-purple: #4A148C;
+    --depp-purple: #3c096c;
+    --text-white: #fff;
+    --font-size-logo: 1.5rem;
+    --font-weight-bold: bold;
+    --font-size-base: 0.875rem;
+    --padding-top-sidebar: 0; /* Alinhamento ao topo */
+    --margin-bottom-logo: 20px;
+    --icon-size-small: 16px;
+    --icon-size-medium: 24px;
+    --icon-size-large: 32px;
+}
+
+body {
+    font-size: var(--font-size-base);
+    background-color: var(--depp-purple);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    background-color: var(--text-white);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    color: var(--bg-purple);
+    text-align: center;
+}
+
+.login-container .logo {
+    text-align: center;
+    color: var(--depp-purple);
+    font-size: 3rem;
+    font-weight: bolder;
+    padding: 15px;
+    margin: 0 auto 20px auto;
+    background-color: var(--text-white);
+    border-radius: 5px;
+    display: inline-block;
+    justify-content: center;
+    
+}
+
+.login-container h4 {
+    color: var(--bg-purple);
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.login-container .form-group label {
+    font-weight: var(--font-weight-bold);
+}
+
+.login-container .form-control {
+    color: var(--depp-purple);
+    border: 1px solid var(--bg-purple);
+}
+
+.login-container .input-group-text {
+    background-color: var(--depp-purple);
+    border: 1px solid var(--bg-purple);
+    color: var(--text-white);
+}
+
+.login-container .btn-primary {
+    background-color: var(--bg-purple);
+    border-color: var(--bg-purple);
+    font-weight: var(--font-weight-bold);
+}
+
+.login-container .btn-primary:hover {
+    background-color: var(--depp-purple);
+    border-color: var(--bg-purple);
+}
+
+.login-container .btn-primary:focus {
+    box-shadow: 0 0 0 0.2rem rgba(74, 20, 140, 0.5);
+}
+
+.select-button {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.checkbox-custom {
+    margin-right: 4px; /* Espaçamento entre a caixa de seleção e o texto */
+    cursor: pointer;
+}
+
+.checkbox-custom input {
+    margin-right: 5px; /* Espaçamento entre a caixa de seleção e o texto */
+}
+
+.select-button i {
+    font-style: normal; /* Remover a fonte em itálico */
+    font-family: Arial, sans-serif; /* Alterar a fonte */
+}
+
+.select-button a{
+    margin-left: auto;
+    text-decoration: none;
+    font-weight: bolder;
+    color: var(--text-white);
+}
+
+.forget{
+    margin-left: 30px;
+    font-family: var(--font-weight-bold);
+    font-size: 0.95rem;
+    color: var(--bg-purple);
+}
+
+.forget:hover{
+    text-decoration: none;
+    color: var(--depp-purple);
+}
+
+.checkbox-custom .checkbox-icon {
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #ccc; /* Cor de fundo padrão */
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.checkbox-custom input:checked + .checkbox-icon::before {
+    content: "\2713"; /* Símbolo de marcação */
+    font-size: 16px;
+    color: #fff; /* Cor do marcador */
+    text-align: center;
+    line-height: 20px;
+}
+
+.select-button:hover .checkbox-custom:not(:checked) + .checkbox-icon {
+    background-color: #792db3; /* Cor de fundo ao passar o mouse */
+}
+
+.select-button .checkbox-custom:checked + .checkbox-icon {
+    background-color: var(--depp-purple); /* Cor de fundo quando selecionado */
+}
+
+#cadastro{
+    background-color: white;
+    color: var(--bg-purple);
+}
+
