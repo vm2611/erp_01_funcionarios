@@ -5,7 +5,7 @@ $password = ''; // Substitua pela senha do MySQL, se houver
 $dbname = 'empresa'; // Nome do banco de dados
 
 try {
-    // Conexão com o banco de dados
+    // Conexão com o servidor MySQL (sem especificar o banco de dados ainda)
     $conn = new PDO("mysql:host=$host", $user, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -32,8 +32,7 @@ try {
         }
         $conn->exec($sql);
         echo "Tabelas criadas ou atualizadas com sucesso!<br>";
-    } 
-    
+    }
 
 } catch (PDOException $e) {
     echo "Erro de conexão: " . $e->getMessage();

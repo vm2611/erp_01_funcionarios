@@ -44,10 +44,6 @@ CREATE TABLE IF NOT EXISTS estoque (
     FOREIGN KEY (produto_id) REFERENCES produtos(produto_id)
 );
 
-CREATE TABLE IF NOT EXISTS metodo_pagamento (
-    metodo_pagamento_id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL
-);
 
 CREATE TABLE IF NOT EXISTS funcionarios (
     funcionario_id INT(11) AUTO_INCREMENT PRIMARY KEY,
@@ -58,17 +54,12 @@ CREATE TABLE IF NOT EXISTS funcionarios (
     email VARCHAR(100) NOT NULL,
     data_admissao DATE NOT NULL,
     salario VARCHAR(20),
+    metodo_pagamento VARCHAR(500),
     FOREIGN KEY (setor_id) REFERENCES setores(setor_id)
 );
 
 -- Adicionando a coluna 'metodo_pagamento_id' e a chave estrangeira apenas se não existirem
 -- Adicionando a coluna 'metodo_pagamento_id' (sem IF NOT EXISTS)
-ALTER TABLE funcionarios
-ADD COLUMN metodo_pagamento_id INT;
-
--- Adicionando a chave estrangeira 'fk_metodo_pagamento' (verifique se já existe antes)
-ALTER TABLE funcionarios
-ADD CONSTRAINT fk_metodo_pagamento FOREIGN KEY (metodo_pagamento_id) REFERENCES metodo_pagamento(metodo_pagamento_id);
 
 
 CREATE TABLE IF NOT EXISTS manutencoes (
@@ -112,12 +103,6 @@ INSERT INTO setores (nome, descricao) VALUES
 ('Setor F', 'Suporte ao cliente'),
 ('Setor G', 'Vendas e marketing');
 
-INSERT INTO metodo_pagamento (nome) VALUES
-('Dinheiro'),
-('Cartão de Crédito'),
-('Cartão de Débito'),
-('Transferência Bancária'),
-('Boleto');
 
 -- Inserir categorias
 INSERT INTO categorias (nome, descricao) VALUES
@@ -162,12 +147,12 @@ INSERT INTO produtos (nome, descricao, preco_venda, preco_custo, quantidade_esto
 ('Produto A5', 'Descrição do Produto A5', 80.00, 60.00, 40, 'Unidade', 5, 5);
 
 -- Inserir funcionários
-INSERT INTO funcionarios (nome, cargo, setor_id, telefone, email, data_admissao, salario, metodo_pagamento_id) VALUES
-('João Silva', 'Analista de Sistemas', 1, '(11) 9988-7766', 'joao.silva@empresa.com', '2023-01-10', 5000.00, 2), -- Cartão de Crédito
-('Maria Oliveira', 'Gerente de Vendas', 2, '(21) 9977-6655', 'maria.oliveira@empresa.com', '2023-02-15', 7000.00, 4), -- Transferência Bancária
-('Carlos Souza', 'Coordenador de Logística', 3, '(31) 9966-5544', 'carlos.souza@empresa.com', '2023-03-20', 5500.00, 5), -- Boleto
-('Ana Paula', 'Assistente Administrativo', 4, '(41) 9955-4433', 'ana.paula@empresa.com', '2023-04-25', 3000.00, 1), -- Dinheiro
-('Roberto Costa', 'Engenheiro de Produção', 5, '(51) 9944-3322', 'roberto.costa@empresa.com', '2023-05-30', 6000.00, 3); -- Cartão de Débito
+INSERT INTO funcionarios (nome, cargo, setor_id, telefone, email, data_admissao, salario, metodo_pagamento) VALUES
+('João Silva', 'Analista de Sistemas', 1, '(11) 9988-7766', 'joao.silva@empresa.com', '2023-01-10', 5000.00, 'Cartão de Crédito'),
+('Maria Oliveira', 'Gerente de Vendas', 2, '(21) 9977-6655', 'maria.oliveira@empresa.com', '2023-02-15', 7000.00, 'Transferência Bancária'),
+('Carlos Souza', 'Coordenador de Logística', 3, '(31) 9966-5544', 'carlos.souza@empresa.com', '2023-03-20', 5500.00, 'Boleto'),
+('Ana Paula', 'Assistente Administrativo', 4, '(41) 9955-4433', 'ana.paula@empresa.com', '2023-04-25', 3000.00, 'Dinheiro'),
+('Roberto Costa', 'Engenheiro de Produção', 5, '(51) 9944-3322', 'roberto.costa@empresa.com', '2023-05-30', 6000.00, 'Cartão de Débito');
 
 -- Inserir manutenções
 INSERT INTO manutencoes (equipamento, descricao_problema, data_inicio, data_termino, tecnico_responsavel, status, responsavel_id) VALUES 

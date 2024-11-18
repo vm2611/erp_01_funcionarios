@@ -25,63 +25,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $salario = 0;
     }
 
-    // Verificar se o setor e o método de pagamento são válidos
+    // Verificar se o setor é válido
     $sql_verifica_setor = "SELECT * FROM setores WHERE setor_id = :setor_id";
     $stmt = $conn->prepare($sql_verifica_setor);
     $stmt->bindParam(':setor_id', $setor_id);
     $stmt->execute();
 
     if ($stmt->rowCount() > 0) {
-        $sql_verifica_metodo = "SELECT * FROM metodo_pagamento WHERE metodo_pagamento_id = :metodo_pagamento";
-        $stmt_metodo = $conn->prepare($sql_verifica_metodo);
-        $stmt_metodo->bindParam(':metodo_pagamento', $metodo_pagamento);
-        $stmt_metodo->execute();
+        // Inserir dados diretamente na tabela de funcionários
+        $sql_insercao = "INSERT INTO funcionarios (nome, cargo, setor_id, telefone, email, data_admissao, salario, metodo_pagamento)
+                         VALUES (:nome, :cargo, :setor_id, :telefone, :email, :admissao, :salario, :metodo_pagamento)";
+        $stmt_inserir = $conn->prepare($sql_insercao);
+        $stmt_inserir->bindParam(':nome', $nome);
+        $stmt_inserir->bindParam(':cargo', $cargo);
+        $stmt_inserir->bindParam(':setor_id', $setor_id);
+        $stmt_inserir->bindParam(':telefone', $telefone);
+        $stmt_inserir->bindParam(':email', $email);
+        $stmt_inserir->bindParam(':admissao', $admissao);
+        $stmt_inserir->bindParam(':salario', $salario, PDO::PARAM_STR);
+        $stmt_inserir->bindParam(':metodo_pagamento', $metodo_pagamento);
 
-        if ($stmt_metodo->rowCount() > 0) {
-            // Inserir dados
-            $sql_insercao = "INSERT INTO funcionarios (nome, cargo, setor_id, telefone, email, data_admissao, salario, metodo_pagamento_id)
-                             VALUES (:nome, :cargo, :setor_id, :telefone, :email, :admissao, :salario, :metodo_pagamento)";
-            $stmt_inserir = $conn->prepare($sql_insercao);
-            $stmt_inserir->bindParam(':nome', $nome);
-            $stmt_inserir->bindParam(':cargo', $cargo);
-            $stmt_inserir->bindParam(':setor_id', $setor_id);
-            $stmt_inserir->bindParam(':telefone', $telefone);
-            $stmt_inserir->bindParam(':email', $email);
-            $stmt_inserir->bindParam(':admissao', $admissao);
-            $stmt_inserir->bindParam(':salario', $salario, PDO::PARAM_STR);
-            $stmt_inserir->bindParam(':metodo_pagamento', $metodo_pagamento);
-
-            if ($stmt_inserir->execute()) {
-                // Redirecionar para atualizar a tabela e evitar reenvio do formulário
-                header("Location: funcionarios.php");
-                exit;
-            } else {
-                echo "<p>Erro ao cadastrar o funcionário.</p>";
-            }
+        if ($stmt_inserir->execute()) {
+            // Redirecionar para atualizar a tabela e evitar reenvio do formulário
+            header("Location: funcionarios.php");
+            exit;
         } else {
-            echo "<p>Método de pagamento inválido.</p>";
+            echo "<p>Erro ao cadastrar o funcionário.</p>";
         }
     } else {
         echo "<p>Setor inválido.</p>";
     }
 }
 
-// Consultas para buscar todos os setores e métodos de pagamento
+// Consultas para buscar todos os setores
 $sql_setores = "SELECT * FROM setores";
 $stmt_setores = $conn->prepare($sql_setores);
 $stmt_setores->execute();
 $result_setores = $stmt_setores->fetchAll(PDO::FETCH_ASSOC);
 
-$sql_metodo_pagamento = "SELECT * FROM metodo_pagamento";
-$stmt_metodo_pagamento = $conn->prepare($sql_metodo_pagamento);
-$stmt_metodo_pagamento->execute();
-$result_metodo_pagamento = $stmt_metodo_pagamento->fetchAll(PDO::FETCH_ASSOC);
-
 // Consulta para buscar todos os funcionários cadastrados
-$sql_funcionarios = "SELECT f.funcionario_id, f.nome, f.cargo, s.nome AS setor, f.telefone, f.email, f.data_admissao, f.salario, mp.nome AS metodo_pagamento
+$sql_funcionarios = "SELECT f.funcionario_id, f.nome, f.cargo, s.nome AS setor, f.telefone, f.email, f.data_admissao, f.salario, f.metodo_pagamento
 FROM funcionarios f
-JOIN setores s ON f.setor_id = s.setor_id
-JOIN metodo_pagamento mp ON f.metodo_pagamento_id = mp.metodo_pagamento_id";
+JOIN setores s ON f.setor_id = s.setor_id";
 $stmt_funcionarios = $conn->prepare($sql_funcionarios);
 $stmt_funcionarios->execute();
 $result_funcionarios = $stmt_funcionarios->fetchAll(PDO::FETCH_ASSOC);
@@ -97,64 +82,145 @@ $result_funcionarios = $stmt_funcionarios->fetchAll(PDO::FETCH_ASSOC);
     <title>Cadastro de Funcionários</title>
     <link rel="stylesheet" href="src/css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="src/css/styles.css">
 </head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <style>
+       
+       :root {
+           --bg-purple: #4A148C;
+           --deep-purple: #3c096c;
+           --text-white: #fff;
+           --border-color: #ddd;
+       }
+       
+       .container {
+           width: 100%;
+           max-width: 800px;
+           padding: 20px;
+           background-color: white;
+           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+           border-radius: 10px;
+           margin-bottom: 20px;
+       }
+       h2 {
+           font-weight: 500;
+           color: white;
+           text-align: center;
+       }
+       form {
+           display: flex;
+           flex-direction: column;
+           gap: 15px;
+           align-items: center;
+       }
+       .form-group, .mb-3 {
+           display: flex;
+           flex-direction: column;
+           width: 100%;
+           max-width: 600px;
+           text-align: left;
+       }
+       input, select {
+           padding: 10px;
+           font-size: 1rem;
+           border: 1px solid var(--border-color);
+           border-radius: 8px;
+           background-color: #f9f9f9;
+           width: 100%;
+       }
+       button {
+           padding: 12px;
+           font-size: 1rem;
+           color: var(--text-white);
+           background-color: var(--bg-purple);
+           border: none;
+           border-radius: 8px;
+           cursor: pointer;
+           font-weight: 500;
+           transition: background-color 0.3s ease;
+           width: 100%;
+           max-width: 600px;
+           margin-top: 20px;
+       }
+       .btn-primary{
+    margin-top: 2%;
+    margin-left: 0%;
+    width: 100%;
+    background-color: var(--bg-purple);
+    border-color: var(--depp-purple);
+}
 
+.btn-primary:hover{
+    background-color: var(--depp-purple);
+    border-color: var(--bg-purple);
+}
+       button:hover {
+           background-color: var(--deep-purple);
+       }
+       .table {
+           width: 100%;
+           border-collapse: collapse;
+           margin-top: 20px;
+       }
+       th, td {
+           padding: 14px;
+           text-align: center;
+           border: 1px solid var(--border-color);
+           
+       }
+       th {
+    background-color: var(--bg-purple); /* Cabeçalho roxo */
+    color: var(--text-white);
+}
+
+       th {
+           background-color: var(--bg-purple);
+           color: var(--text-white);
+       }
+       td {
+           background-color: #f9f9f9;
+       }
+       
+</style>
+
+    
 <body>
     <!--NÃO ALTERAR-->
+    <body>
     <div class="container-fluid">
         <div class="row">
         <nav class="col-md-2 d-none d-md-block bg-purple sidebar">
-                <div class="logo">
+                <div class="logo text-center py-4">
+                   
                     <h2>HORIZON+</h2>
                 </div>
                 <div class="sidebar-sticky">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#">
+                            <a class="nav-link active" href="produtos.php">
+                               
                                 <i class="bi bi-phone-fill icon-large"></i>
                                 <span>Produtos</span>
-                                <i id="indicator" class="bi bi-caret-left-fill indicator"></i>
+                               
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-basket2-fill icon-large"></i>
-                                <span>Pedidos</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-people-fill icon-large"></i>
-                                <span>Fornecedores</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="funcionarios.php">
-                                <i class="bi bi-person-badge-fill icon-large"></i>
-                                <span>Funcionários</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-box-fill icon-large"></i>
-                                <span>Estoque</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-pc-display-horizontal icon-large"></i>
-                                <span>Equipamentos</span>
-                            </a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" href="pedidos.php"><i class="bi bi-basket2-fill icon-large"></i> Pedidos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="fornecedores.php"><i class="bi bi-people-fill icon-large"></i> Fornecedores</a></li>
+                        <li class="nav-item"><a class="nav-link" href="funcionarios.php"><i class="bi bi-person-badge-fill icon-large"></i> Funcionários</a></li>
+                        <li class="nav-item"><a class="nav-link" href="estoque.php"><i class="bi bi-box-fill icon-large"></i> Estoque</a></li>
+                        <li class="nav-item"><a class="nav-link" href="manutencao.php"><i class="bi bi-pc-display-horizontal icon-large"></i> Manutenção</a></li>
                     </ul>
-                    <div class="user">
-                        <div class="nav-item">
-                            <div class="d-flex align-items-center card-user">
-                                <i class="bi bi-person-circle users"></i>
+                    <div class="user mt-4">
+                        <div class="nav-item text-center">
+                            <div class=>
+                                
                                 <div class="ml-2">
-                                    <div>Funcionário</div>
-                                    <div class="text-muted" style="font-size: 0.8em;">Função xyz</div>
+                                 
                                 </div>
                             </div>
                         </div>
@@ -163,15 +229,15 @@ $result_funcionarios = $stmt_funcionarios->fetchAll(PDO::FETCH_ASSOC);
             </nav>
             <!--NÃO ALTERAR-->
             
-            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+            <main role="main" class="container">
+                <div class="container">
                     <h1 class="h2">CADASTRO DE FUNCIONARIOS</h1>
                 </div>
                 <!--NÃO ALTERAR-->
                 <!--MEXER AQUI -->
                 <div class="conteiner"></div>
                 <form method="POST" action="funcionarios.php">
-                <div class="mb-3">
+                <div class="form-group">
                         <label for="nome" class="form-label">Nome</label>
                         <input type="text" class="form-control" id="nome" name="nome" required>
                     </div>
@@ -208,12 +274,11 @@ $result_funcionarios = $stmt_funcionarios->fetchAll(PDO::FETCH_ASSOC);
     <input type="text" class="form-control salary" id="salario" name="salario" required>
 </div>
                     <div class="mb-3">
+                        
                         <label for="metodo_pagamento" class="form-label">Método de Pagamento</label>
-                        <select class="form-control" id="metodo_pagamento" name="metodo_pagamento" required>
-                            <?php foreach ($result_metodo_pagamento as $metodo) { ?>
-                                <option value="<?= $metodo['metodo_pagamento_id'] ?>"><?= $metodo['nome'] ?></option>
-                            <?php } ?>
-                        </select>
+                        <input class="text" id="metodo_pagamento" name="metodo_pagamento" required>
+                           
+                    
                     </div>
                     <button type="submit" class="btn btn-primary">Cadastrar</button>
                 </form>
@@ -222,7 +287,7 @@ $result_funcionarios = $stmt_funcionarios->fetchAll(PDO::FETCH_ASSOC);
 
               
 <h2 class="mt-5">Funcionários Cadastrados</h2>
-<table class="table table-striped">
+<table class="table table-bordered">
    <thead>
        <tr>
            <th>Nome</th>
@@ -248,8 +313,8 @@ $result_funcionarios = $stmt_funcionarios->fetchAll(PDO::FETCH_ASSOC);
                <td><?= htmlspecialchars(number_format($funcionario['salario'], 2, ',', '.')) ?></td>
                <td><?= htmlspecialchars($funcionario['metodo_pagamento']) ?></td>
                <td>
-                   <a href="update.php?id=<?= $funcionario['funcionario_id'] ?>" class="btn btn-warning btn-sm">Alterar</a>
-                   <a href="delete.php?id=<?= $funcionario['funcionario_id'] ?>" class="btn btn-danger btn-sm">Excluir</a>
+                   <a href="update_funcionarios.php?id=<?= $funcionario['funcionario_id'] ?>" class="btn btn-warning btn-sm">Alterar</a>
+                   <a href="delete_funcionarios.php?id=<?= $funcionario['funcionario_id'] ?>" class="btn btn-danger btn-sm">Excluir</a>
                </td>
            </tr>
        <?php } ?>
